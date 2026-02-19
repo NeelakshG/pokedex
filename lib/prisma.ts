@@ -1,4 +1,4 @@
-import { PrismaClient } from "./generated/prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 //we need to check if a PrismaClient exist
 //Next.js suport hot reloading of changing files, if the framework restarts, we have to ensure that extra unwanted instances of the database do not exist
