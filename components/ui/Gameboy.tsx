@@ -1,7 +1,6 @@
 "use client"
 
 import useTypewriter from "@/hooks/useTypewriter"
-import { useRouter } from "next/navigation"
 import { useState } from "react";
 
 export default function Gameboy({ children }: { children: React.ReactNode }) {
@@ -106,7 +105,7 @@ function SelectStart({ onStart }: { onStart: () => void }) {
 /* ---------------- Screen ---------------- */
 
 function GameboyScreen({ started }: { started: boolean }) {
-  const displayedText = useTypewriter(`Welcome to Neelaksh's Database!!\n
+  const displayedText = useTypewriter(`Welcome to Neelaksh's Pokedex!!\n
     Press START to begin`, 150)
 
   return (
