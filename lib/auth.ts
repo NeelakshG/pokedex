@@ -1,46 +1,86 @@
-import prisma from "@/lib/prisma"// ...existing code...
+import prisma from "@/lib/prisma"
 import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 
-//we will export the result of calling NextAuth()
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: process.env.NEXTAUTH_SECRET,
+
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
+
   providers: [
     CredentialsProvider({
-        credentials: {
-            email: {},
-            password: {},
-        },
-        authorize: async (credentials) => {
+      credentials: {
+        email: {},
+        password: {},
+      },
 
-            //find user in DB by email
-            const user = await prisma.user.findUnique({
-                where: {
-                    // Replace 'email' with the correct unique field if needed
-                    email: credentials.email as string
-                }
-            })
+      authorize: async (credentials) => {
 
-            if (!user) {
-                return null
-            }
+        const emailRaw = credentials?.email
+        const passwordRaw = credentials?.password
 
-            const passwordMatch = await bcrypt.compare(
-                credentials.password as string,
-                user.hashedPassword as string
-            )
+        console.log("RAW CREDS:", credentials)
+        console.log("emailRaw:", emailRaw, "type:", typeof emailRaw)
+        console.log("passwordRaw:", passwordRaw, "type:", typeof passwordRaw)
 
-            // if passwords don't match return null
-            if (!passwordMatch) {
-                return null
-            }
- 
-            return user
+        if (typeof emailRaw !== "string" || typeof passwordRaw !== "string") {
+          console.log("Invalid credential types")
+          return null
         }
-    })
-  ]
+
+        // show invisible characters (spaces/newlines)
+        console.log("passwordRaw JSON:", JSON.stringify(passwordRaw))
+        console.log("passwordRaw length:", passwordRaw.length)
+
+        const email = emailRaw.toLowerCase()
+        const password = passwordRaw.trim() // keep as-is for now
+
+          if (
+            typeof email !== "string" ||
+            typeof password !== "string"
+          ) {
+            console.log("Invalid credential types")
+            return null
+          }
+
+        const user = await prisma.user.findFirst({
+        where: {
+          email: {
+            equals: email,
+            mode: "insensitive"
+          }
+        }
+      })
+
+      console.log("FOUND USER:", user)
+
+      if (!user) {
+        console.log("User not found")
+        return null
+      }
+
+        const passwordMatch = await bcrypt.compare(
+          password,
+          user.hashedPassword
+        )
+
+        console.log("PASSWORD MATCH:", passwordMatch)
+
+        if (!passwordMatch) return null
+
+        // ⚠️ VERY IMPORTANT
+        // DO NOT return full prisma user object
+        // return only what NextAuth needs
+
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        }
+      },
+    }),
+  ],
 })
-// ...existing code...
