@@ -1,85 +1,90 @@
 "use client"
-import React, { useEffect } from "react"
+
+import Link from "next/link"
+import React, { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
-import Link from "next/link"
+import toast from "react-hot-toast"
+import { SignInResponse } from "next-auth/react"
 
 export default function LoginPage() {
-  const [user, setUser] = React.useState({
+  const router = useRouter()
+
+  const [user, setUser] = useState({
     email: "",
     password: "",
   })
 
-  const router = useRouter()
-  const [buttonDisabled, setButtonDisabled] = React.useState(true)
-  const [loading, setLoading] = React.useState(false)
-  const [error, setError] = React.useState("")
+  const [buttonDisabled, setButtonDisabled] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   const onLogin = async () => {
     try {
       setLoading(true)
-      const response = await signIn("credentials", {
+
+      const result = await signIn("credentials", {
         email: user.email,
         password: user.password,
-        redirect: false,
-      })
+        redirect: false, // we control redirect manually
+      }) as SignInResponse | undefined
 
-      if (response?.error) {
-        setError("Invalid email or password")
-        return
+      if (!result || result.error) {
+        toast.error(result?.error ?? "Invalid credentials")
+      } else {
+        toast.success("Login successful")
+        router.push("/profile")
       }
 
-      router.push("/pokemon")
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.log(error)
+      toast.error("Something went wrong")
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    if (user.email.length > 0 && user.password.length > 0) {
-      setButtonDisabled(false)
-    } else {
-      setButtonDisabled(true)
-    }
+    setButtonDisabled(!(user.email && user.password))
   }, [user])
 
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-black text-2xl font-bold">
-        {loading ? "Logging in..." : "Login"}
-      </h1>
+    <div className="flex flex-col items-center justify-center min-h-screen py-2">
+      <h1>{loading ? "Processing..." : "Login"}</h1>
+      <hr />
 
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-
+      <label htmlFor="email">Email</label>
       <input
-        className="p-2 border border-gray-300 rounded-lg focus:outline-none bg-white text-black"
-        type="email"
+        className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 bg-white text-black"
+        type="text"
+        id="email"
         value={user.email}
-        onChange={(e) => setUser({ ...user, email: e.target.value })}
-        placeholder="Email"
+        onChange={(e) =>
+          setUser({ ...user, email: e.target.value })
+        }
+        placeholder="email"
       />
 
+      <label htmlFor="password">Password</label>
       <input
-        className="p-2 border border-gray-300 rounded-lg focus:outline-none bg-white text-black"
+        className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 bg-white text-black"
         type="password"
+        id="password"
         value={user.password}
-        onChange={(e) => setUser({ ...user, password: e.target.value })}
-        placeholder="Password"
+        onChange={(e) =>
+          setUser({ ...user, password: e.target.value })
+        }
+        placeholder="password"
       />
 
       <button
-        className="p-2 rounded-lg bg-red-600 text-white disabled:opacity-50 cursor-pointer"
+        disabled={buttonDisabled || loading}
+        className="p-2 border border-gray-300 rounded-md mb-4 bg-black text-white disabled:opacity-50"
         onClick={onLogin}
-        disabled={buttonDisabled}
       >
-        {loading ? "Loading..." : "Login"}
+        {loading ? "Processing..." : "Login"}
       </button>
 
-      <Link href="/register" className="text-black text-sm text-center">
-        Don't have an account? Register
-      </Link>
+      <Link href="/register">Visit Sign up</Link>
     </div>
   )
 }
