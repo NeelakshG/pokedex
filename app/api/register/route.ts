@@ -12,14 +12,15 @@ export async function POST(request: Request) {
   try {
     
     //validating the data
-  if (!name || !email || !password) {
+  if (!name?.trim() || !email.trim() || !password.trim()) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       )
     }
 
-    //checking if person exists
+
+    //checking if person exists in the database
     const existingUser = await prisma.user.findUnique({
                 where: {
                     email: email as string
@@ -34,14 +35,17 @@ export async function POST(request: Request) {
     } 
 
     //hash the password
-    const saltRounds = 10
-    const hashedPassword = await bcrypt.hash(password, saltRounds)
+    const cleanPassword = password.trim()
+    const hashedPassword = await bcrypt.hash(cleanPassword, 10)
+
+    //email should be lowercased
+    const normalizedEmail = email.toLowerCase()
 
     //creating a user
     const newUser = await prisma.user.create({
           data: {
-            email,
-            name,
+            email: normalizedEmail,
+            name: name.trim(),
             hashedPassword: hashedPassword,
           },
         });
