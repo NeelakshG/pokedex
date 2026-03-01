@@ -1,37 +1,24 @@
 "use client"
 
-import { useState } from "react"
-import { usePokedexStore } from "@/lib/pokedexStore"
+import Link from "next/link"
 
 export default function Header() {
 
-    //grabing lists from the global store
-    const pokemonList = usePokedexStore(state => state.pokemonList)
-    const setFiltered = usePokedexStore(state => state.setFiltered)
+  return (
+    <div className="p-4 border-b bg-white flex justify-between items-center">
 
-    const [searchItem, setSearchItem] = useState("")
-    const handleSearch = (value:string) => {
+      {/* branding */}
+      <h1 className="text-2xl font-bold">
+        Neelaksh&apos;s Pokédex
+      </h1>
 
-        //update the input box text
-        setSearchItem(value)
-
-        //filter from the real deal
-        const filtered = pokemonList.filter(p => p.name.toLowerCase().includes(value.toLowerCase()))
-
-        setFiltered(filtered)
-    }
-    return (
-    <div className="w-full p-4 shadow-md bg-white">
-
-      <input
-        type="text"
-        value={searchItem}
-        onChange={(e) => handleSearch(e.target.value)}
-        placeholder="Search Pokémon..."
-        className="border p-2 rounded w-full"
-      />
+      {/* nav links */}
+      <nav className="flex gap-6 text-sm font-medium">
+        <Link href="/profile" className="hover:text-blue-500 transition-colors">Profile</Link>
+        <Link href="/favorites" className="hover:text-blue-500 transition-colors">Favourites</Link>
+        <Link href="/teams" className="hover:text-blue-500 transition-colors">Teams</Link>
+      </nav>
 
     </div>
   )
-
 }
