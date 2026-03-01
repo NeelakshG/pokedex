@@ -32,7 +32,7 @@ export default function LoginPage() {
         toast.error(result?.error ?? "Invalid credentials")
       } else {
         toast.success("Login successful")
-        router.push("/profile")
+        router.push("/pokedex")
       }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
