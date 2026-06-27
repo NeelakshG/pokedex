@@ -4,6 +4,16 @@ import { NextResponse } from "next/server"
 export default auth((req) => {
   const isLoggedIn = !!req.auth
 
+  const { pathname } = req.nextUrl
+
+  if (pathname === "/" && !isLoggedIn) {
+    return NextResponse.redirect(new URL("/login", req.url))
+  }
+
+  if (pathname === "/" && isLoggedIn) {
+    return NextResponse.redirect(new URL("/pokedex", req.url))
+  }
+
   const protectedRoutes = [
     "/pokedex",
     "/profile",
@@ -12,7 +22,7 @@ export default auth((req) => {
   ]
 
   const isProtected = protectedRoutes.some(route =>
-    req.nextUrl.pathname.startsWith(route)
+    pathname.startsWith(route)
   )
 
   if (isProtected && !isLoggedIn) {
@@ -24,6 +34,7 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
+    "/",
     "/pokedex/:path*",
     "/profile/:path*",
     "/favorites/:path*",
