@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier, export_text
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
 
@@ -61,3 +62,22 @@ for i in range(3):
     print(f"\n{name} (true: {true_type}, predicted: {pred_type})")
     print(type_probs.head(5).apply(lambda p: f"{p:.1%}"))
     print(f"sum of all probabilities: {probs[i].sum():.4f}")
+
+# Decision Tree — trees split on raw thresholds (e.g. "speed > 90?"), so scaling
+# doesn't change anything about the splits. We use the unscaled X_train/X_test.
+tree = DecisionTreeClassifier(random_state=42)
+tree.fit(X_train, y_train)
+
+train_accuracy = accuracy_score(y_train, tree.predict(X_train))
+test_accuracy = accuracy_score(y_test, tree.predict(X_test))
+
+print(f"\nDecision Tree train accuracy: {train_accuracy:.1%}")
+print(f"Decision Tree test accuracy:  {test_accuracy:.1%}")
+print(f"(Logistic Regression test accuracy was {lr_accuracy:.1%}, baseline {baseline_accuracy:.1%})")
+
+print("\nfeature importances (which stats the tree actually split on):")
+importances = pd.Series(tree.feature_importances_, index=STAT_COLUMNS).sort_values(ascending=False)
+print(importances.apply(lambda v: f"{v:.1%}"))
+
+print("\nfirst few levels of the actual learned rules:")
+print(export_text(tree, feature_names=STAT_COLUMNS, max_depth=3))
