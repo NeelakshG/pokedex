@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -9,6 +10,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: "Nunito", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -48,7 +50,35 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 1rem;
+
+  /* Pokémon brand color */
+  --pokemon-red: #DC0A2D;
+  --pokemon-red-dark: #B00824;
+
+  /* Card shadow token */
+  --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --card-shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* Pokémon type colors — bg and text */
+  --type-normal-bg:   #A8A77A;  --type-normal-text:   #ffffff;
+  --type-fire-bg:     #EE8130;  --type-fire-text:     #ffffff;
+  --type-water-bg:    #6390F0;  --type-water-text:    #ffffff;
+  --type-electric-bg: #F7D02C;  --type-electric-text: #1a1a1a;
+  --type-grass-bg:    #7AC74C;  --type-grass-text:    #ffffff;
+  --type-ice-bg:      #96D9D6;  --type-ice-text:      #1a1a1a;
+  --type-fighting-bg: #C22E28;  --type-fighting-text: #ffffff;
+  --type-poison-bg:   #A33EA1;  --type-poison-text:   #ffffff;
+  --type-ground-bg:   #E2BF65;  --type-ground-text:   #1a1a1a;
+  --type-flying-bg:   #A98FF3;  --type-flying-text:   #1a1a1a;
+  --type-psychic-bg:  #F95587;  --type-psychic-text:  #ffffff;
+  --type-bug-bg:      #A6B91A;  --type-bug-text:      #1a1a1a;
+  --type-rock-bg:     #B6A136;  --type-rock-text:     #ffffff;
+  --type-ghost-bg:    #735797;  --type-ghost-text:    #ffffff;
+  --type-dragon-bg:   #6F35FC;  --type-dragon-text:   #ffffff;
+  --type-dark-bg:     #705746;  --type-dark-text:     #ffffff;
+  --type-steel-bg:    #B7B7CE;  --type-steel-text:    #1a1a1a;
+  --type-fairy-bg:    #D685AD;  --type-fairy-text:    #1a1a1a;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
