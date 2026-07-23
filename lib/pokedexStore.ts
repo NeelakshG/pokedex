@@ -28,6 +28,7 @@ type PokedexState = {
   activeTypeFilter: string | null
 
   setPokemon: (data: Pokemon[]) => void
+  appendPokemon: (data: Pokemon[]) => void
   setFiltered: (data: Pokemon[]) => void
   setSelected: (poke: Pokemon) => void
   closeModal: () => void
@@ -68,6 +69,16 @@ export const usePokedexStore = create<PokedexState>((set, get) => ({
       filteredList: data,
       searchQuery: "",
       activeTypeFilter: null,
+    }),
+
+  // merge in a background-loaded batch without disturbing current filters/scroll
+  appendPokemon: (data) =>
+    set((state) => {
+      const merged = [...state.pokemonList, ...data]
+      return {
+        pokemonList: merged,
+        filteredList: applyFilters(merged, state.searchQuery, state.activeTypeFilter),
+      }
     }),
 
   // when user clicks a card

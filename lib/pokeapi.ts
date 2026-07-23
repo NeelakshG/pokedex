@@ -28,8 +28,17 @@ export async function getPokemon(id: number): Promise<PokemonDetail> {
   }
 }
 
-export async function getPokemonList(limit = 50) {
-  const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}`, CACHE)
+// How many official Pokemon species exist -- used so we can fetch "all of them"
+// without hardcoding a number that goes stale when a new game adds more.
+async function getSpeciesCount(): Promise<number> {
+  const res = await fetch("https://pokeapi.co/api/v2/pokemon-species?limit=1", CACHE)
+  const data = await res.json()
+  return data.count
+}
+
+export async function getPokemonList(limit?: number, offset = 0) {
+  const resolvedLimit = limit ?? (await getSpeciesCount())
+  const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${resolvedLimit}&offset=${offset}`, CACHE)
   const data = await res.json()
 
   // Extract ID from each URL and reuse getPokemon — force-cache means no duplicate network calls
@@ -40,3 +49,5 @@ export async function getPokemonList(limit = 50) {
     })
   )
 }
+
+export { getSpeciesCount }
